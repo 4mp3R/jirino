@@ -1,18 +1,7 @@
 defmodule Jirino do
-  @moduledoc """
-  Documentation for Jirino.
-  """
-
-  @doc """
-  Hello world.
-
-  ## Examples
-
-      iex> Jirino.hello
-      :world
-
-  """
-  def hello do
-    :world
+  
+  def token do
+    Application.get_env(:jirino, :token)
   end
+
 end
