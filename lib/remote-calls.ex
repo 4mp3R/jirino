@@ -6,12 +6,12 @@ defmodule Jirino.RemoteCalls do
   end
 
   @doc"""
-    Fetches all issues assigned to the user and returns a list of Jirino.Issue structs.
+    Fetches all the issues assigned to the given user and returns a list of Jirino.Issue structs.
   """
-  def get_issues do
+  def get_issues(username) do
     options = [
       params: [
-        {"jql", "assignee = currentUser()"},
+        {"jql", "assignee = \"#{username}\""},
         {"fields", "summary,priority,status,creator,issuetype"}
       ]
     ]
@@ -81,14 +81,14 @@ defmodule Jirino.RemoteCalls do
   end
 
   defp get_url(resource_path) do
-    base_url = Application.get_env(:jirino, :jiraBaseUrl)
+    base_url = Jirino.Utilities.get_config(:jiraBaseUrl)
 
     "#{base_url}/rest/api/2#{resource_path}"
   end
 
   defp get_headers do
-    username = Application.get_env(:jirino, :username)
-    user_token = Application.get_env(:jirino, :token)
+    username = Jirino.Utilities.get_config(:username)
+    user_token = Jirino.Utilities.get_config(:token)
     auth_token = Base.encode64 "#{username}:#{user_token}"
 
     ["Authorization": "Basic #{auth_token}", "Accept": "Application/json; Charset=utf-8"]

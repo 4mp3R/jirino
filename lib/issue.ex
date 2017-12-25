@@ -18,20 +18,24 @@ defmodule Jirino.Issue do
     end
   end
 
-  defp format_summary(issue) do
+  def format_short(issue) do
     %Jirino.Issue{
       key: key,
       type: type,
       status: status,
-      creator: creator,
-      summary: summary,
-      priority: priority
+      summary: summary
       } = issue
 
-      """
-      #{key} (#{type}) - #{status} :: #{summary}
-      Father: #{creator}, P/#{priority}
-      """
+      "#{key} (#{type}) - #{status} :: #{summary}"
+  end
+
+  defp format_summary(issue) do
+    %Jirino.Issue{
+      creator: creator,
+      priority: priority
+    } = issue
+
+    format_short(issue) <> "\nFather: #{creator}, P/#{priority}"
   end
 
   defp format_summary_and_description(issue) do
