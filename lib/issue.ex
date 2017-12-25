@@ -1,6 +1,6 @@
 
-defmodule Jirino.Api.Issue do
-  
+defmodule Jirino.Issue do
+
   defstruct key: nil,
     type: nil,
     priority: nil,
@@ -10,7 +10,7 @@ defmodule Jirino.Api.Issue do
     description: nil
 
   def format(issue) do
-    %Jirino.Api.Issue{
+    %Jirino.Issue{
       key: key,
       type: type,
       priority: priority,

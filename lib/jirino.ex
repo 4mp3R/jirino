@@ -35,8 +35,8 @@ defmodule Jirino do
 
   defp show_issue(key) do
     key
-    |> Jirino.Api.RemoteCalls.get_issue
-    |> Jirino.Api.Issue.format
+    |> Jirino.RemoteCalls.get_issue
+    |> Jirino.Issue.format
     |> IO.puts
   end
 
