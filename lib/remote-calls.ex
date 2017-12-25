@@ -6,6 +6,48 @@ defmodule Jirino.RemoteCalls do
   end
 
   @doc"""
+    Fetches all issues assigned to the user and returns a list of Jirino.Issue structs.
+  """
+  def get_issues do
+    options = [
+      params: [
+        {"jql", "assignee = currentUser()"},
+        {"fields", "summary,priority,status,creator,issuetype"}
+      ]
+    ]
+
+    %HTTPoison.Response{body: body} = HTTPoison.get! get_url("/search"), get_headers(), options
+
+    {:ok, %{"issues" => issues}} = Poison.decode body
+
+    Enum.map issues, fn(%{
+      "key" => key,
+      "fields" => %{
+        "summary" => summary,
+        "priority" => %{
+          "name" => priority_name
+        },
+        "status" => %{
+          "name" => status_name
+        },
+        "creator" => %{
+          "displayName" => creator_name
+        },
+        "issuetype" => %{
+          "name" => type_name
+        }
+      }
+    }) -> %Jirino.Issue{
+      key: key,
+      summary: summary,
+      priority: priority_name,
+      status: status_name,
+      creator: creator_name,
+      type: type_name
+    } end
+  end
+
+  @doc"""
     Fetches a given issue and fills the Jirino.Issue struct.
   """
   def get_issue(issue) do

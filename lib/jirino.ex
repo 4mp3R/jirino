@@ -11,12 +11,14 @@ defmodule Jirino do
 
    Usage:
    "team" - show the current team composition
+   "issues" - shows all issues assigned to you
    "issue ISSUE_KEY" - shows a summary for an issue
   """
 
   def main(args) do
     case args do
       ["team"] -> show_team()
+      ["issues"] -> show_my_issues()
       ["issue", key] -> show_issue(key)
       _ -> show_help_message()
     end
@@ -31,6 +33,12 @@ defmodule Jirino do
         |> Enum.map(fn(teammate) -> "-> #{teammate}\n" end)
         |> IO.puts
     end
+  end
+
+  defp show_my_issues do
+    Jirino.RemoteCalls.get_issues
+    |> Enum.map(fn(issue) -> "#{Jirino.Issue.format(issue)}\n" end)
+    |> IO.puts
   end
 
   defp show_issue(key) do
