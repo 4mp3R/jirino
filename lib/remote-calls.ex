@@ -5,14 +5,12 @@ defmodule Jirino.RemoteCalls do
     HTTPoison.start
   end
 
-  @doc"""
-    Fetches all the issues assigned to the given user and returns a list of Jirino.Issue structs.
-  """
-  def get_issues(username) do
+
+  defp get_issues(jql) do
     options = [
       params: [
-        {"jql", "assignee = \"#{username}\""},
-        {"fields", "summary,priority,status,creator,issuetype"}
+        {"jql", jql},
+        {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
       ]
     ]
 
@@ -24,6 +22,7 @@ defmodule Jirino.RemoteCalls do
       "key" => key,
       "fields" => %{
         "summary" => summary,
+        "created" => created,
         "priority" => %{
           "name" => priority_name
         },
@@ -35,16 +34,42 @@ defmodule Jirino.RemoteCalls do
         },
         "issuetype" => %{
           "name" => type_name
-        }
+        },
+        "assignee" => assignee
       }
-    }) -> %Jirino.Issue{
+    }) ->
+      assignee_name = case assignee do
+        nil -> ""
+        assignee ->
+          %{"name" => assignee_name} = assignee
+          assignee_name
+      end
+
+      %Jirino.Issue{
       key: key,
       summary: summary,
+      created: created,
       priority: priority_name,
       status: status_name,
       creator: creator_name,
-      type: type_name
-    } end
+      type: type_name,
+      assignee: assignee_name
+    }
+    end
+  end
+
+  @doc"""
+    Gets Jira issues for a given user.
+  """
+  def get_issues_for_user(user) do
+    get_issues("assignee = \"#{user}\"")
+  end
+
+  @doc"""
+    Gets Jira issues created in the past week.
+  """
+  def get_latest_issues_for_project(project) do
+    get_issues("project = \"#{project}\" AND created >= -7d ORDER BY created DESC")
   end
 
   @doc"""
@@ -80,13 +105,13 @@ defmodule Jirino.RemoteCalls do
     }
   end
 
-  defp get_url(resource_path) do
+  def get_url(resource_path) do
     base_url = Jirino.Utilities.get_config(:jiraBaseUrl)
 
     "#{base_url}/rest/api/2#{resource_path}"
   end
 
-  defp get_headers do
+  def get_headers do
     username = Jirino.Utilities.get_config(:username)
     user_token = Jirino.Utilities.get_config(:token)
     auth_token = Base.encode64 "#{username}:#{user_token}"

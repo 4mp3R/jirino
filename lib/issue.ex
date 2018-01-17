@@ -7,7 +7,9 @@ defmodule Jirino.Issue do
     status: nil,
     creator: nil,
     summary: nil,
-    description: nil
+    description: nil,
+    created: nil,
+    assignee: nil
 
   def format(issue) do
     %Jirino.Issue{description: description} = issue
@@ -23,10 +25,12 @@ defmodule Jirino.Issue do
       key: key,
       type: type,
       status: status,
-      summary: summary
+      summary: summary,
+      created: created,
+      assignee: assignee
       } = issue
 
-      "#{key} (#{type}) - #{status} :: #{summary}"
+      "#{key} (#{type}) - #{status} :: #{created} :: #{assignee} :: #{summary}"
   end
 
   defp format_summary(issue) do

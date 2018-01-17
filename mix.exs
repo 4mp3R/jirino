@@ -15,7 +15,7 @@ defmodule Jirino.Mixfile do
   # Run "mix help compile.app" to learn about applications.
   def application do
     [
-      applications: [:httpoison],
+      applications: [:httpoison, :timex],
       extra_applications: [:logger]
     ]
   end
@@ -24,7 +24,8 @@ defmodule Jirino.Mixfile do
   defp deps do
     [
       {:httpoison, "~> 0.13"},
-      {:poison, "~> 3.1"}
+      {:poison, "~> 3.1"},
+      {:timex, "~> 3.1"}
     ]
   end
 end
