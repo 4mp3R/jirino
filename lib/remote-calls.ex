@@ -22,7 +22,7 @@ defmodule Jirino.RemoteCalls do
       "key" => key,
       "fields" => %{
         "summary" => summary,
-        "created" => created,
+        "created" => created_iso_date_string,
         "priority" => %{
           "name" => priority_name
         },
@@ -39,11 +39,13 @@ defmodule Jirino.RemoteCalls do
       }
     }) ->
       assignee_name = case assignee do
-        nil -> ""
+        nil -> nil
         assignee ->
           %{"name" => assignee_name} = assignee
           assignee_name
       end
+
+      { :ok, created, _ } = DateTime.from_iso8601(created_iso_date_string)
 
       %Jirino.Issue{
       key: key,

@@ -30,7 +30,14 @@ defmodule Jirino.Issue do
       assignee: assignee
       } = issue
 
-      "#{key} (#{type}) - #{status} :: #{created} :: #{assignee} :: #{summary}"
+      formatted_date = Momento.format(created, "YYYY/MM/DD HH:MM")
+
+      assignee_string = case assignee do
+        nil -> ""
+        assignee -> " :: " <> assignee
+      end
+
+      "#{key} (#{type}) - #{status} :: #{formatted_date}#{assignee_string} :: #{summary}"
   end
 
   defp format_summary(issue) do
