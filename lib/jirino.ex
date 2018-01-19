@@ -28,7 +28,7 @@ defmodule Jirino do
       ["issues", "new"] -> show_new_issues()
       ["issue", key] -> show_issue(key)
       ["sprint"] -> show_active_sprint_issues()
-      ["backlog_bugs"] -> show_backlog_bus()
+      ["backlog", "bugs"] -> show_backlog_bugs()
       _ -> show_help_message()
     end
   end
@@ -80,8 +80,11 @@ defmodule Jirino do
 
   end
 
-  defp show_backlog_bus do
-
+  defp show_backlog_bugs do
+    Jirino.Utilities.get_config(:project)
+    |> Jirino.RemoteCalls.get_backlog_bugs
+    |> Enum.map(fn(issue) -> "#{Jirino.Issue.format_short(issue)}\n" end)
+    |> IO.puts
   end
 
   defp show_help_message do

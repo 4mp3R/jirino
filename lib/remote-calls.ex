@@ -75,6 +75,13 @@ defmodule Jirino.RemoteCalls do
   end
 
   @doc"""
+    Gets the bugs that are in the backlog.
+  """
+  def get_backlog_bugs(project) do
+    get_issues("project = \"#{project}\" AND issuetype = Bug AND resolution = Unresolved AND (Sprint = EMPTY OR Sprint not in (openSprints(), futureSprints())) ORDER BY created DESC")
+  end
+
+  @doc"""
     Fetches a given issue and fills the Jirino.Issue struct.
   """
   def get_issue(issue) do
@@ -107,13 +114,13 @@ defmodule Jirino.RemoteCalls do
     }
   end
 
-  def get_url(resource_path) do
+  defp get_url(resource_path) do
     base_url = Jirino.Utilities.get_config(:jiraBaseUrl)
 
     "#{base_url}/rest/api/2#{resource_path}"
   end
 
-  def get_headers do
+  defp get_headers do
     username = Jirino.Utilities.get_config(:username)
     user_token = Jirino.Utilities.get_config(:token)
     auth_token = Base.encode64 "#{username}:#{user_token}"
