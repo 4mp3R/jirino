@@ -1,3 +1,4 @@
+
 defmodule Jirino do
 
   @help_message """
@@ -77,7 +78,19 @@ defmodule Jirino do
   end
 
   defp show_active_sprint_issues do
+    Jirino.Utilities.get_config(:project)
+    |> Jirino.RemoteCalls.get_active_sprint_issues
+    |> Enum.group_by(fn(issue) -> issue.status end)
+    |> Enum.map(fn({status, issues_group}) ->
+      status_header = "#{status} issues:\n"
 
+      issues_text = issues_group
+      |> Enum.map(&Jirino.Issue.format_short/1)
+      |> Enum.join("\n")
+
+      status_header <> issues_text <> "\n\n"
+    end)
+    |> IO.puts
   end
 
   defp show_backlog_bugs do

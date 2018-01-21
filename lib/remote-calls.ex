@@ -5,7 +5,6 @@ defmodule Jirino.RemoteCalls do
     HTTPoison.start
   end
 
-
   defp get_issues(jql) do
     options = [
       params: [
@@ -79,6 +78,13 @@ defmodule Jirino.RemoteCalls do
   """
   def get_backlog_bugs(project) do
     get_issues("project = \"#{project}\" AND issuetype = Bug AND resolution = Unresolved AND (Sprint = EMPTY OR Sprint not in (openSprints(), futureSprints())) ORDER BY created DESC")
+  end
+
+  @doc"""
+    Gets the tickets that are in the active sprints.
+  """
+  def get_active_sprint_issues(project) do
+    get_issues("project = \"#{project}\" AND Sprint in openSprints() ORDER BY created DESC")
   end
 
   @doc"""
