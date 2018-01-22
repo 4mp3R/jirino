@@ -60,6 +60,13 @@ defmodule Jirino.RemoteCalls do
   end
 
   @doc"""
+    Get detatils of a Jira ticket by its key.
+  """
+  def get_issue_by_key(issue_key) do
+    get_issues("key = \"#{issue_key}\"")
+  end
+
+  @doc"""
     Gets Jira issues for a given user.
   """
   def get_issues_for_user(user) do
@@ -85,39 +92,6 @@ defmodule Jirino.RemoteCalls do
   """
   def get_active_sprint_issues(project) do
     get_issues("project = \"#{project}\" AND Sprint in openSprints() ORDER BY created DESC")
-  end
-
-  @doc"""
-    Fetches a given issue and fills the Jirino.Issue struct.
-  """
-  def get_issue(issue) do
-    %HTTPoison.Response{body: body} = HTTPoison.get! get_url("/issue/#{issue}"), get_headers()
-
-    {:ok, %{"fields" => fields, "key" => key}} = Poison.decode body
-
-    %{
-      "priority" => priority,
-      "status" => status,
-      "creator" => creator,
-      "summary" => summary,
-      "description" => description,
-      "issuetype" => type
-    } = fields
-
-    %{"name" => priority_name} = priority
-    %{"name" => status_name} = status
-    %{"displayName" => creator_name} = creator
-    %{"name" => type_name} = type
-
-    %Jirino.Issue{
-      key: key,
-      priority: priority_name,
-      status: status_name,
-      creator: creator_name,
-      summary: summary,
-      description: description,
-      type: type_name
-    }
   end
 
   defp get_url(resource_path) do
