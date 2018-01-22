@@ -30,6 +30,7 @@ defmodule Jirino do
       ["issue", key] -> show_issue(key)
       ["sprint"] -> show_active_sprint_issues()
       ["backlog", "bugs"] -> show_backlog_bugs()
+      ["open", key] -> open_issue(key)
       _ -> show_help_message()
     end
   end
@@ -98,6 +99,16 @@ defmodule Jirino do
     |> Jirino.RemoteCalls.get_backlog_bugs
     |> Enum.map(fn(issue) -> "#{Jirino.Issue.format_short(issue)}\n" end)
     |> IO.puts
+  end
+
+  defp open_issue(key) do
+    base_url = Jirino.Utilities.get_config(:jiraBaseUrl)
+    { _, os_name } = :os.type()
+
+    case os_name do
+      :darwin -> System.cmd("open", ["#{base_url}/browse/#{key}"])
+      _ -> IO.puts("Sorry, your OS is not supported yet :()")
+    end
   end
 
   defp show_help_message do
