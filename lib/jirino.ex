@@ -60,14 +60,16 @@ defmodule Jirino do
   defp show_my_issues do
     Jirino.Utilities.get_config(:username)
     |> Jirino.RemoteCalls.get_issues_for_user
-    |> Enum.map(fn(issue) -> "#{Jirino.Issue.format(issue)}\n" end)
+    |> Enum.map(&Jirino.Issue.format/1)
+    |> Enum.join("\n")
     |> IO.puts
   end
 
   defp show_new_issues do
     Jirino.Utilities.get_config(:project)
     |> Jirino.RemoteCalls.get_latest_issues_for_project
-    |> Enum.map(fn(issue) -> "#{Jirino.Issue.format_short(issue)}\n" end)
+    |> Enum.map(&Jirino.Issue.format_short/1)
+    |> Enum.join("\n")
     |> IO.puts
   end
 
@@ -98,7 +100,8 @@ defmodule Jirino do
   defp show_backlog_bugs do
     Jirino.Utilities.get_config(:project)
     |> Jirino.RemoteCalls.get_backlog_bugs
-    |> Enum.map(fn(issue) -> "#{Jirino.Issue.format_short(issue)}\n" end)
+    |> Enum.map(&Jirino.Issue.format_short/1)
+    |> Enum.join("\n")
     |> IO.puts
   end
 
