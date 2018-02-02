@@ -48,18 +48,21 @@ defmodule Jirino do
 
   defp show_team_issues do
     Jirino.Utilities.get_config(:team)
-    |> Enum.map(fn(teammate) -> {teammate, Jirino.RemoteCalls.get_issues_for_user(teammate)} end)
-    |> Enum.map(fn({teammate, issues}) -> Enum.reduce(
+    |> Jirino.RemoteCalls.get_issues_for_users
+    |> Enum.group_by(fn(issue) -> issue.assignee end)
+    |> Enum.map(fn({user, issues}) -> Enum.reduce(
       issues,
-      "\n===[#{teammate}'s issues]===\n",
-      fn(issue, acc) -> acc <> "#{Jirino.Issue.format_short(issue)}\n" end)
-    end)
+      "===[#{user}'s issues]===\n",
+      fn(issue, acc) -> acc <> "#{Jirino.Issue.format_short(issue)}\n" end
+    )
     |> IO.puts
+    end)
   end
 
   defp show_my_issues do
     Jirino.Utilities.get_config(:username)
-    |> Jirino.RemoteCalls.get_issues_for_user
+    |> (fn(user) -> [user] end).()
+    |> Jirino.RemoteCalls.get_issues_for_users
     |> Enum.map(&Jirino.Issue.format/1)
     |> Enum.join("\n")
     |> IO.puts

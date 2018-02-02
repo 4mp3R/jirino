@@ -69,8 +69,11 @@ defmodule Jirino.RemoteCalls do
   @doc"""
     Gets Jira issues for a given user.
   """
-  def get_issues_for_user(user) do
-    get_issues("assignee = \"#{user}\"")
+  def get_issues_for_users(users) do
+    users
+    |> Enum.map(fn(user) -> "assignee = \"#{user}\"" end)
+    |> Enum.join(" OR ")
+    |> get_issues
   end
 
   @doc"""
