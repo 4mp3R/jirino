@@ -13,7 +13,17 @@ defmodule Jirino.RemoteCalls do
       ]
     ]
 
-    %HTTPoison.Response{body: body} = HTTPoison.get! get_url("/search"), get_headers(), options
+    response = nil
+
+    response = try do
+      HTTPoison.get! get_url("/search"), get_headers(), options
+    rescue
+      error in HTTPoison.Error ->
+        IO.puts "[!] Netowrk Error: " <> HTTPoison.Error.message(error)
+        Process.exit self(), :normal
+    end
+
+    %HTTPoison.Response{body: body} = response
 
     {:ok, %{"issues" => issues}} = Poison.decode body
 
