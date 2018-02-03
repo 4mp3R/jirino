@@ -1,6 +1,10 @@
 
 defmodule Jirino do
 
+  @moduledoc """
+    Main application module.
+  """
+
   @help_message """
      __   _        _
      \\ \\ (_) _ __ (_) _ __    ___
@@ -21,6 +25,9 @@ defmodule Jirino do
    "open ISSUE_KEY" - open an issue page in the web browser
   """
 
+  @doc """
+    Main function called with command line arguments.
+  """
   def main(args) do
     case args do
       ["team"] -> show_team()
@@ -41,7 +48,8 @@ defmodule Jirino do
         IO.puts "The team has not been defined yet!"
       team ->
         team
-        |> Enum.map(fn(teammate) -> "-> #{teammate}\n" end)
+        |> Enum.map(fn(teammate) -> "-> #{teammate}" end)
+        |> Enum.join("\n")
         |> IO.puts
     end
   end
