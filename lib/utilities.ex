@@ -1,10 +1,10 @@
 
 defmodule Jirino.Utilities do
-  @moduledoc"""
+  @moduledoc """
     A module that contains some utility functions for Jirino.
   """
 
-  @doc"""
+  @doc """
     Gets a Jirino configuration value by key. The configuration is defined in *config/config.exs*.
 
     ##Params
@@ -21,7 +21,7 @@ defmodule Jirino.Utilities do
     end
   end
 
-  @doc"""
+  @doc """
     Displays a progress bar in the terminal.
     Each time it's called with total < done it re-draws the bar.
     Once the total == done it draws the complete bar and 2 new lines.
