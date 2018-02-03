@@ -5,15 +5,15 @@ defmodule Jirino.RemoteCalls do
     HTTPoison.start
   end
 
-  defp get_issues(jql) do
+  defp get_issues(jql, startAt \\ 0) do
     options = [
       params: [
+        {"maxResults", 50},
+        {"startAt", startAt},
         {"jql", jql},
         {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
       ]
     ]
-
-    response = nil
 
     response = try do
       HTTPoison.get! get_url("/search"), get_headers(), options
@@ -25,9 +25,17 @@ defmodule Jirino.RemoteCalls do
 
     %HTTPoison.Response{body: body} = response
 
-    {:ok, %{"issues" => issues}} = Poison.decode body
+    {
+      :ok,
+      %{
+        "issues" => issues,
+        "startAt" => startIndex,
+        "maxResults" => resultsPerPage,
+        "total" => total
+      }
+    } = Poison.decode body
 
-    Enum.map issues, fn(%{
+    issues = Enum.map issues, fn(%{
       "key" => key,
       "fields" => %{
         "summary" => summary,
@@ -57,16 +65,30 @@ defmodule Jirino.RemoteCalls do
       { :ok, created, _ } = DateTime.from_iso8601(created_iso_date_string)
 
       %Jirino.Issue{
-      key: key,
-      summary: summary,
-      created: created,
-      priority: priority_name,
-      status: status_name,
-      creator: creator_name,
-      type: type_name,
-      assignee: assignee_name
-    }
+        key: key,
+        summary: summary,
+        created: created,
+        priority: priority_name,
+        status: status_name,
+        creator: creator_name,
+        type: type_name,
+        assignee: assignee_name
+      }
     end
+
+    pages_loaded = div(startIndex, resultsPerPage) + 1
+    total_pages = div(total, resultsPerPage) + 1
+
+    if total_pages > 1 do
+      Jirino.Utilities.display_progress(pages_loaded, total_pages, 4)
+    end
+
+    issues = case pages_loaded < total_pages do
+      true -> issues ++ get_issues(jql, startIndex + resultsPerPage)
+      false -> issues
+    end
+
+    issues
   end
 
   @doc"""
