@@ -25,7 +25,10 @@ defmodule Jirino.Mixfile do
     [
       {:httpoison, "~> 0.13"},
       {:poison, "~> 3.1"},
-      {:momento, "~> 0.1.1"}
+      {:momento, "~> 0.1.1"},
+
+      {:earmark, "~> 0.1", only: :dev},
+      {:ex_doc, "~> 0.11", only: :dev}
     ]
   end
 end

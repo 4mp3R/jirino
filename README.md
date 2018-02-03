@@ -22,3 +22,9 @@ Here are the environment variables to set:
 
 ## Usage
 Run Jirino wihtout arguments to show the usage banner that'll list all the possibile arguments and features :)
+
+## Tests
+You can run unit and doc tests with `mix test`
+
+## Documentation
+You can generate documentation for all modules and functions by running `mix docs`
