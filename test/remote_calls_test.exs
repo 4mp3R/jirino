@@ -16,7 +16,7 @@
       {
         HTTPoison,
         [],
-        [get!: fn(url, headers, options) ->
+        [get!: fn(_url, _headers, _options) ->
           %HTTPoison.Response{
             body: """
             {
@@ -97,7 +97,7 @@
       {
         HTTPoison,
         [],
-        [get!: fn(url, headers, options) ->
+        [get!: fn(_url, _headers, _options) ->
           %HTTPoison.Response{
             body: """
             {
@@ -214,7 +214,7 @@
       {
         HTTPoison,
         [],
-        [get!: fn(url, headers, options) ->
+        [get!: fn(_url, _headers, _options) ->
           %HTTPoison.Response{
             body: """
             {
@@ -295,7 +295,7 @@
       {
         HTTPoison,
         [],
-        [get!: fn(url, headers, options) ->
+        [get!: fn(_url, _headers, _options) ->
           %HTTPoison.Response{
             body: """
             {
@@ -376,7 +376,7 @@
       {
         HTTPoison,
         [],
-        [get!: fn(url, headers, options) ->
+        [get!: fn(_url, _headers, _options) ->
           %HTTPoison.Response{
             body: """
             {
@@ -444,5 +444,124 @@
   end
 
   test "should handle paginated results" do
+    response_page_1 = %HTTPoison.Response{
+      body: """
+      {
+        "issues": [{
+          "key": "ZZ-111",
+          "fields": {
+            "summary": "First page issue",
+            "created": "2020-10-10T11:22:33.000Z",
+            "priority": {
+              "name": "High Priority"
+            },
+            "status": {
+              "name": "In Code Review"
+            },
+            "creator": {
+              "displayName": "Agent Smith"
+            },
+            "issuetype": {
+              "name": "Bug"
+            },
+            "assignee": {
+              "name": "Sammy Black"
+            }
+          }
+        }],
+        "startAt": 0,
+        "maxResults": 1,
+        "total": 2
+      }
+      """
+    }
+    response_page_2 = %HTTPoison.Response{
+      body: """
+      {
+        "issues": [{
+          "key": "ZZ-222",
+          "fields": {
+            "summary": "Second page issue",
+            "created": "2020-11-11T11:22:33.000Z",
+            "priority": {
+              "name": "Low Priority"
+            },
+            "status": {
+              "name": "In Development"
+            },
+            "creator": {
+              "displayName": "Bob"
+            },
+            "issuetype": {
+              "name": "Task"
+            },
+            "assignee": {
+              "name": "Ron"
+            }
+          }
+        }],
+        "startAt": 1,
+        "maxResults": 1,
+        "total": 2
+      }
+      """
+    }
+
+    with_mocks([
+      {
+        Jirino.Utilities,
+        [],
+        [
+          get_config: fn
+            key when key == :jiraBaseUrl -> "base_jira_url"
+            key when key == :username -> "username"
+            key when key == :token -> "secrettoken"
+          end,
+          display_progress: fn(_loaded, _total, _factor) -> nil end
+        ]
+      },
+      {
+        HTTPoison,
+        [],
+        [get!: fn(_url, _header, options) ->
+          {_, startIndex} = Enum.find(
+            options[:params],
+            fn({key, _}) -> key == "startAt" end
+          )
+
+          case startIndex do
+            0 -> response_page_1
+            1 -> response_page_2
+          end
+        end]
+      }
+    ]) do
+        issues = Jirino.RemoteCalls.get_issues_for_users ["mrsmith@mail.com"]
+
+        {:ok, creation_date1, _} = DateTime.from_iso8601("2020-10-10T11:22:33.000Z")
+        {:ok, creation_date2, _} = DateTime.from_iso8601("2020-11-11T11:22:33.000Z")
+        assert issues == [
+          %Jirino.Issue{
+            key: "ZZ-111",
+            summary: "First page issue",
+            created: creation_date1,
+            priority: "High Priority",
+            status: "In Code Review",
+            creator: "Agent Smith",
+            type: "Bug",
+            assignee: "Sammy Black"
+          },
+          %Jirino.Issue{
+            key: "ZZ-222",
+            summary: "Second page issue",
+            created: creation_date2,
+            priority: "Low Priority",
+            status: "In Development",
+            creator: "Bob",
+            type: "Task",
+            assignee: "Ron"
+          }
+        ]
+    end
   end
 end

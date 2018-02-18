@@ -77,7 +77,7 @@ defmodule Jirino.RemoteCalls do
     end
 
     pages_loaded = div(startIndex, resultsPerPage) + 1
-    pages_count_adjustment = case total > resultsPerPage do
+    pages_count_adjustment = case rem(total, resultsPerPage) > 0 do
       true -> 1
       false -> 0
     end
