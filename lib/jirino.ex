@@ -123,7 +123,7 @@ defmodule Jirino do
     case os_name do
       :darwin -> System.cmd("open", ["#{base_url}/browse/#{key}"])
       :linux -> System.cmd("xdg-open", ["#{base_url}/browse/#{key}"])
-      _ -> IO.puts("Sorry, your OS is not supported yet :()")
+      _ -> IO.puts("Sorry, your OS is not supported yet :(")
     end
   end
 
