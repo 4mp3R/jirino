@@ -77,7 +77,11 @@ defmodule Jirino.RemoteCalls do
     end
 
     pages_loaded = div(startIndex, resultsPerPage) + 1
-    total_pages = div(total, resultsPerPage) + 1
+    pages_count_adjustment = case total > resultsPerPage do
+      true -> 1
+      false -> 0
+    end
+    total_pages = div(total, resultsPerPage) + pages_count_adjustment
 
     if total_pages > 1 do
       IO.write Jirino.Utilities.display_progress(pages_loaded, total_pages, 6)
