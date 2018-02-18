@@ -1,8 +1,9 @@
 # Jirino
 
 ## Setup instructions
-- Create a secret config file `cp config/secret.exs.dist config/secret.exs`
-- Put in the token value taken from the `cloud.session.token`
+- Clone the repo
+- [Install](https://elixir-lang.org/install.html) Erlang and Elixir if you don't have them already
+- Install the dependencies by running `mix deps.get`
 
 ## Build & install
 - mix escript.build
@@ -11,7 +12,7 @@
 In order to be able to run Jirino from anywhere in the console, please add the `~/.mix/escripts` in your *$PATH*.
 
 ## Configuration
-Jirino to be configured before it can be used. It read user settings from the invironment variables so you can change
+Jirino must be configured before it can be used. It reads user's settings from the environment variables so you can change
 them without rebuilding and reinstalling the escript.
 Here are the environment variables to set:
 - JIRINO_USERNAME : The username or email for your Jira user, like `bobby@gmail.com`.
@@ -20,8 +21,11 @@ Here are the environment variables to set:
 - JIRINO_PROJECT : The name of the project you're working on, like `My Cool Project`.
 - JIRINO_TEAM : The comma-separated list of names or emails of the members of your team, like: `bob@company.com,sam@company.com,sally@company.com`.
 
+It might be handy creating a `.jirino` file in which you can set and export such environment variables and then load such a file
+during the shell init with `source .jirino` (for example, from `.bashrc`).
+
 ## Usage
-Run Jirino wihtout arguments to show the usage banner that'll list all the possibile arguments and features :)
+Run Jirino wihtout arguments to show the usage banner that'll list all the possible arguments and features :)
 
 ## Tests
 You can run unit and doc tests with `mix test`
