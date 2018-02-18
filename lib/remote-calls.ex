@@ -11,7 +11,7 @@ defmodule Jirino.RemoteCalls do
         {"maxResults", 50},
         {"startAt", startAt},
         {"jql", jql},
-        {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+        {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
       ]
     ]
 
@@ -52,7 +52,8 @@ defmodule Jirino.RemoteCalls do
         "issuetype" => %{
           "name" => type_name
         },
-        "assignee" => assignee
+        "assignee" => assignee,
+        "description" => description
       }
     }) ->
       assignee_name = case assignee do
@@ -72,7 +73,8 @@ defmodule Jirino.RemoteCalls do
         status: status_name,
         creator: creator_name,
         type: type_name,
-        assignee: assignee_name
+        assignee: assignee_name,
+        description: description
       }
     end
 

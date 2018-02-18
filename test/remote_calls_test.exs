@@ -39,7 +39,8 @@
                   },
                   "assignee": {
                     "name": "Sammy Black"
-                  }
+                  },
+                  "description": null
                 }
               }],
               "startAt": 0,
@@ -63,7 +64,7 @@
           {"maxResults", 50},
           {"startAt", 0},
           {"jql", "key = \"XY-123\""},
-          {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+          {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
         ]
       ]
 
@@ -121,7 +122,8 @@
                     },
                     "assignee": {
                       "name": "Sammy Black"
-                    }
+                    },
+                    "description": null
                   }
                 },
                 {
@@ -143,7 +145,8 @@
                     },
                     "assignee": {
                       "name": "Dean Green"
-                    }
+                    },
+                    "description": null
                   }
                 }
               ],
@@ -168,7 +171,7 @@
           {"maxResults", 50},
           {"startAt", 0},
           {"jql", "assignee = \"user1@mail.com\" OR assignee = \"user2@mail.com\""},
-          {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+          {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
         ]
       ]
 
@@ -237,7 +240,8 @@
                   },
                   "assignee": {
                     "name": "Sammy Black"
-                  }
+                  },
+                  "description": null
                 }
               }],
               "startAt": 0,
@@ -261,7 +265,7 @@
           {"maxResults", 50},
           {"startAt", 0},
           {"jql", "project = \"Super Duper Project\" AND created >= -7d ORDER BY created DESC"},
-          {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+          {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
         ]
       ]
 
@@ -318,7 +322,8 @@
                   },
                   "assignee": {
                     "name": "Sammy Black"
-                  }
+                  },
+                  "description": null
                 }
               }],
               "startAt": 0,
@@ -342,7 +347,7 @@
           {"maxResults", 50},
           {"startAt", 0},
           {"jql", "project = \"Super Duper Project\" AND issuetype = Bug AND resolution = Unresolved AND (Sprint = EMPTY OR Sprint not in (openSprints(), futureSprints())) ORDER BY created DESC"},
-          {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+          {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
         ]
       ]
 
@@ -399,7 +404,8 @@
                   },
                   "assignee": {
                     "name": "Sammy Black"
-                  }
+                  },
+                  "description": null
                 }
               }],
               "startAt": 0,
@@ -423,7 +429,7 @@
           {"maxResults", 50},
           {"startAt", 0},
           {"jql", "project = \"Super Duper Project\" AND Sprint in openSprints() ORDER BY created DESC"},
-          {"fields", "summary,priority,status,creator,issuetype,assignee,created"}
+          {"fields", "summary,priority,status,creator,issuetype,assignee,created,description"}
         ]
       ]
 
@@ -466,7 +472,8 @@
             },
             "assignee": {
               "name": "Sammy Black"
-            }
+            },
+            "description": null
           }
         }],
         "startAt": 0,
@@ -497,7 +504,8 @@
             },
             "assignee": {
               "name": "Ron"
-            }
+            },
+            "description": null
           }
         }],
         "startAt": 1,
