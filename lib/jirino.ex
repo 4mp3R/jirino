@@ -55,7 +55,7 @@ defmodule Jirino do
   end
 
   defp show_team_issues do
-    Jirino.Utilities.get_config(:team)
+    chunks = Jirino.Utilities.get_config(:team)
     |> Jirino.RemoteCalls.get_issues_for_users
     |> Enum.group_by(fn(issue) -> issue.assignee end)
     |> Enum.map(fn({user, issues}) -> Enum.reduce(
@@ -63,15 +63,18 @@ defmodule Jirino do
       "===[#{user}'s issues]===\n",
       fn(issue, acc) -> acc <> "#{Jirino.Issue.format_short(issue)}\n" end
     )
-    |> IO.puts
     end)
+
+    chunks
+    |> Enum.join("\n")
+    |> IO.puts
   end
 
   defp show_my_issues do
     Jirino.Utilities.get_config(:username)
     |> (fn(user) -> [user] end).()
     |> Jirino.RemoteCalls.get_issues_for_users
-    |> Enum.map(&Jirino.Issue.format/1)
+    |> Enum.map(&Jirino.Issue.format_short/1)
     |> Enum.join("\n")
     |> IO.puts
   end
@@ -105,6 +108,7 @@ defmodule Jirino do
 
       status_header <> issues_text <> "\n\n"
     end)
+    |> Enum.join("")
     |> IO.puts
   end
 

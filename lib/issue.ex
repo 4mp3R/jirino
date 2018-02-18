@@ -67,7 +67,7 @@ defmodule Jirino.Issue do
       iex> date = %DateTime{ year: 2020, month: 2, day: 29, zone_abbr: "AMT", hour: 22, minute: 11, second: 7, microsecond: {0, 0}, utc_offset: -14400, std_offset: 0, time_zone: "America/Manaus" }
       ...> issue = %Jirino.Issue{ key: "KK-123", type: "Bug", status: "In Code Review", summary: "Summary here", created: date, assignee: "bob@mail.com", priority: "Critical", creator: "sam@mail.com", description: "Description here" }
       ...> Jirino.Issue.format issue
-      "KK-123 (Bug) - In Code Review :: 2020/02/29 22:11 :: bob@mail.com :: Summary here\\nFather: sam@mail.com, P/Critical\\n===[Description]===\\nDescription here\\n"
+      "KK-123 (Bug) - In Code Review :: 2020/02/29 22:11 :: bob@mail.com :: Summary here\\nFather: sam@mail.com, P/Critical\\n===[Description]===\\nDescription here"
   """
   def format(issue) do
     %Jirino.Issue{description: description} = issue
@@ -92,7 +92,7 @@ defmodule Jirino.Issue do
 
     format_summary(issue) <> """
     \n===[Description]===
-    #{description}
+    #{description}\
     """
   end
 
