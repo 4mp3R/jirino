@@ -40,7 +40,7 @@
                   "assignee": {
                     "name": "Sammy Black"
                   },
-                  "description": null
+                  "description": "Issue description"
                 }
               }],
               "startAt": 0,
@@ -79,7 +79,8 @@
         status: "In Code Review",
         creator: "Agent Smith",
         type: "Bug",
-        assignee: "Sammy Black"
+        assignee: "Sammy Black",
+        description: "Issue description"
       }]
     end
   end
