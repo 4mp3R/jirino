@@ -1,4 +1,3 @@
-
 defmodule Jirino.Issue do
   @moduledoc """
     Defines a struct that represents a Jira issue and contains some basic info about it.
@@ -6,14 +5,14 @@ defmodule Jirino.Issue do
   """
 
   defstruct key: nil,
-    type: nil,
-    priority: nil,
-    status: nil,
-    creator: nil,
-    summary: nil,
-    description: nil,
-    created: nil,
-    assignee: nil
+            type: nil,
+            priority: nil,
+            status: nil,
+            creator: nil,
+            summary: nil,
+            description: nil,
+            created: nil,
+            assignee: nil
 
   @doc """
     Formats a given struct in a short human-readable form.
@@ -40,16 +39,17 @@ defmodule Jirino.Issue do
       summary: summary,
       created: created,
       assignee: assignee
-      } = issue
+    } = issue
 
-      formatted_date = Momento.format(created, "YYYY/MM/DD HH:mm")
+    formatted_date = Momento.format(created, "YYYY/MM/DD HH:mm")
 
-      assignee_string = case assignee do
+    assignee_string =
+      case assignee do
         nil -> ""
         assignee -> " :: " <> assignee
       end
 
-      "#{key} (#{type}) - #{status} :: #{formatted_date}#{assignee_string} :: #{summary}"
+    "#{key} (#{type}) - #{status} :: #{formatted_date}#{assignee_string} :: #{summary}"
   end
 
   @doc """
@@ -90,10 +90,10 @@ defmodule Jirino.Issue do
   defp format_summary_and_description(issue) do
     %Jirino.Issue{description: description} = issue
 
-    format_summary(issue) <> """
-    \n===[Description]===
-    #{description}\
-    """
+    format_summary(issue) <>
+      """
+      \n===[Description]===
+      #{description}\
+      """
   end
-
 end
