@@ -28,19 +28,21 @@ defmodule Jirino do
   @doc """
     Main function called with command line arguments.
   """
-  def main(args) do
-    case args do
-      ["team"] -> show_team()
-      ["team", "issues"] -> show_team_issues()
-      ["issues"] -> show_my_issues()
-      ["issues", "new"] -> show_new_issues()
-      ["issue", key] -> show_issue(key)
-      ["sprint"] -> show_active_sprint_issues()
-      ["backlog", "bugs"] -> show_backlog_bugs()
-      ["open", key] -> open_issue(key)
-      _ -> show_help_message()
-    end
-  end
+  def main(["team", "issues"]), do: show_team_issues()
+  def main(["team"]), do: show_team()
+
+  def main(["issues", "new"]), do: show_new_issues()
+  def main(["issues"]), do: show_my_issues()
+
+  def main(["issue", key]), do: show_issue(key)
+
+  def main(["sprint"]), do: show_active_sprint_issues()
+
+  def main(["backlog", "bugs"]), do: show_backlog_bugs()
+
+  def main(["open", key]), do: open_issue(key)
+
+  def main(_), do: show_help_message()
 
   defp show_team do
     case Jirino.Utilities.get_config(:team) do
