@@ -1,4 +1,3 @@
-
 defmodule Jirino.Utilities do
   @moduledoc """
     A module that contains some utility functions for Jirino.
@@ -15,9 +14,12 @@ defmodule Jirino.Utilities do
   """
   def get_config(key) do
     case key do
-      :team -> Application.get_env(:jirino, :team)
+      :team ->
+        Application.get_env(:jirino, :team)
         |> String.split(",")
-      _ -> Application.get_env(:jirino, key)
+
+      _ ->
+        Application.get_env(:jirino, key)
     end
   end
 
@@ -33,17 +35,17 @@ defmodule Jirino.Utilities do
 
     ##Example
       iex> Jirino.Utilities.display_progress(1, 5, 2)
-      "#{IO.ANSI.clear_line}\\rLoading... [==        ]"
+      "#{IO.ANSI.clear_line()}\\rLoading... [==        ]"
 
       iex> Jirino.Utilities.display_progress(5, 5)
-      "#{IO.ANSI.clear_line}\\rLoading... [=====] Done!\\n\\n"
+      "#{IO.ANSI.clear_line()}\\rLoading... [=====] Done!\\n\\n"
   """
   def display_progress(done, total, magnification_factor \\ 1) do
-    progress_text = IO.ANSI.clear_line
-      <> "\rLoading... ["
-      <> String.duplicate("=", done * magnification_factor)
-      <> String.duplicate(" ", (total - done) * magnification_factor)
-      <> "]"
+    progress_text =
+      IO.ANSI.clear_line() <>
+        "\rLoading... [" <>
+        String.duplicate("=", done * magnification_factor) <>
+        String.duplicate(" ", (total - done) * magnification_factor) <> "]"
 
     if done == total do
       progress_text <> " Done!\n\n"
@@ -51,5 +53,4 @@ defmodule Jirino.Utilities do
       progress_text
     end
   end
-
 end

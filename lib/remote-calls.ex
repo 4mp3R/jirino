@@ -1,8 +1,6 @@
-
 defmodule Jirino.RemoteCalls do
-
   def init do
-    HTTPoison.start
+    HTTPoison.start()
   end
 
   defp get_issues(jql, startAt \\ 0) do
@@ -15,13 +13,14 @@ defmodule Jirino.RemoteCalls do
       ]
     ]
 
-    response = try do
-      HTTPoison.get! get_url("/search"), get_headers(), options
-    rescue
-      error in HTTPoison.Error ->
-        IO.puts "[!] Netowrk Error: " <> HTTPoison.Error.message(error)
-        Process.exit self(), :normal
-    end
+    response =
+      try do
+        HTTPoison.get!(get_url("/search"), get_headers(), options)
+      rescue
+        error in HTTPoison.Error ->
+          IO.puts("[!] Netowrk Error: " <> HTTPoison.Error.message(error))
+          Process.exit(self(), :normal)
+      end
 
     %HTTPoison.Response{body: body} = response
 
@@ -33,102 +32,112 @@ defmodule Jirino.RemoteCalls do
         "maxResults" => resultsPerPage,
         "total" => total
       }
-    } = Poison.decode body
+    } = Poison.decode(body)
 
-    issues = Enum.map issues, fn(%{
-      "key" => key,
-      "fields" => %{
-        "summary" => summary,
-        "created" => created_iso_date_string,
-        "priority" => %{
-          "name" => priority_name
-        },
-        "status" => %{
-          "name" => status_name
-        },
-        "creator" => %{
-          "displayName" => creator_name
-        },
-        "issuetype" => %{
-          "name" => type_name
-        },
-        "assignee" => assignee,
-        "description" => description
-      }
-    }) ->
-      assignee_name = case assignee do
-        nil -> nil
-        assignee ->
-          %{"name" => assignee_name} = assignee
-          assignee_name
-      end
+    issues =
+      Enum.map(issues, fn %{
+                            "key" => key,
+                            "fields" => %{
+                              "summary" => summary,
+                              "created" => created_iso_date_string,
+                              "priority" => %{
+                                "name" => priority_name
+                              },
+                              "status" => %{
+                                "name" => status_name
+                              },
+                              "creator" => %{
+                                "displayName" => creator_name
+                              },
+                              "issuetype" => %{
+                                "name" => type_name
+                              },
+                              "assignee" => assignee,
+                              "description" => description
+                            }
+                          } ->
+        assignee_name =
+          case assignee do
+            nil ->
+              nil
 
-      { :ok, created, _ } = DateTime.from_iso8601(created_iso_date_string)
+            assignee ->
+              %{"name" => assignee_name} = assignee
+              assignee_name
+          end
 
-      %Jirino.Issue{
-        key: key,
-        summary: summary,
-        created: created,
-        priority: priority_name,
-        status: status_name,
-        creator: creator_name,
-        type: type_name,
-        assignee: assignee_name,
-        description: description
-      }
-    end
+        {:ok, created, _} = DateTime.from_iso8601(created_iso_date_string)
+
+        %Jirino.Issue{
+          key: key,
+          summary: summary,
+          created: created,
+          priority: priority_name,
+          status: status_name,
+          creator: creator_name,
+          type: type_name,
+          assignee: assignee_name,
+          description: description
+        }
+      end)
 
     pages_loaded = div(startIndex, resultsPerPage) + 1
-    pages_count_adjustment = case rem(total, resultsPerPage) > 0 do
-      true -> 1
-      false -> 0
-    end
+
+    pages_count_adjustment =
+      case rem(total, resultsPerPage) > 0 do
+        true -> 1
+        false -> 0
+      end
+
     total_pages = div(total, resultsPerPage) + pages_count_adjustment
 
     if total_pages > 1 do
-      IO.write Jirino.Utilities.display_progress(pages_loaded, total_pages, 6)
+      IO.write(Jirino.Utilities.display_progress(pages_loaded, total_pages, 6))
     end
 
-    issues = case pages_loaded < total_pages do
-      true -> issues ++ get_issues(jql, startIndex + resultsPerPage)
-      false -> issues
-    end
+    issues =
+      case pages_loaded < total_pages do
+        true -> issues ++ get_issues(jql, startIndex + resultsPerPage)
+        false -> issues
+      end
 
     issues
   end
 
-  @doc"""
+  @doc """
     Get detatils of a Jira ticket by its key.
   """
   def get_issue_by_key(issue_key) do
     get_issues("key = \"#{issue_key}\"")
   end
 
-  @doc"""
+  @doc """
     Gets Jira issues for a given user.
   """
   def get_issues_for_users(users) do
     users
-    |> Enum.map(fn(user) -> "assignee = \"#{user}\"" end)
+    |> Enum.map(fn user -> "assignee = \"#{user}\"" end)
     |> Enum.join(" OR ")
     |> get_issues
   end
 
-  @doc"""
+  @doc """
     Gets Jira issues created in the past week.
   """
   def get_latest_issues_for_project(project) do
     get_issues("project = \"#{project}\" AND created >= -7d ORDER BY created DESC")
   end
 
-  @doc"""
+  @doc """
     Gets the bugs that are in the backlog.
   """
   def get_backlog_bugs(project) do
-    get_issues("project = \"#{project}\" AND issuetype = Bug AND resolution = Unresolved AND (Sprint = EMPTY OR Sprint not in (openSprints(), futureSprints())) ORDER BY created DESC")
+    get_issues(
+      "project = \"#{project}\" AND issuetype = Bug AND resolution = Unresolved AND (Sprint = EMPTY OR Sprint not in (openSprints(), futureSprints())) ORDER BY created DESC"
+    )
   end
 
-  @doc"""
+  @doc """
     Gets the tickets that are in the active sprints.
   """
   def get_active_sprint_issues(project) do
@@ -144,9 +153,8 @@ defmodule Jirino.RemoteCalls do
   defp get_headers do
     username = Jirino.Utilities.get_config(:username)
     user_token = Jirino.Utilities.get_config(:token)
-    auth_token = Base.encode64 "#{username}:#{user_token}"
+    auth_token = Base.encode64("#{username}:#{user_token}")
 
-    ["Authorization": "Basic #{auth_token}", "Accept": "Application/json; Charset=utf-8"]
+    [Authorization: "Basic #{auth_token}", Accept: "Application/json; Charset=utf-8"]
   end
-
 end

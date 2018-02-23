@@ -30,9 +30,10 @@ use Mix.Config
 #     import_config "#{Mix.env}.exs"
 
 use Mix.Config
-  config :jirino,
-    username: System.get_env("JIRINO_USERNAME"),
-    token: System.get_env("JIRINO_TOKEN"),
-    jiraBaseUrl: System.get_env("JIRINO_BASE_URL"),
-    project: System.get_env("JIRINO_PROJECT"),
-    team: System.get_env("JIRINO_TEAM")
+
+config :jirino,
+  username: System.get_env("JIRINO_USERNAME"),
+  token: System.get_env("JIRINO_TOKEN"),
+  jiraBaseUrl: System.get_env("JIRINO_BASE_URL"),
+  project: System.get_env("JIRINO_PROJECT"),
+  team: System.get_env("JIRINO_TEAM")

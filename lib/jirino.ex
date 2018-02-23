@@ -1,6 +1,4 @@
-
 defmodule Jirino do
-
   @moduledoc """
     Main application module.
   """
@@ -28,101 +26,105 @@ defmodule Jirino do
   @doc """
     Main function called with command line arguments.
   """
-  def main(args) do
-    case args do
-      ["team"] -> show_team()
-      ["team", "issues"] -> show_team_issues()
-      ["issues"] -> show_my_issues()
-      ["issues", "new"] -> show_new_issues()
-      ["issue", key] -> show_issue(key)
-      ["sprint"] -> show_active_sprint_issues()
-      ["backlog", "bugs"] -> show_backlog_bugs()
-      ["open", key] -> open_issue(key)
-      _ -> show_help_message()
-    end
-  end
+  def main(["team", "issues"]), do: show_team_issues()
+  def main(["team"]), do: show_team()
+
+  def main(["issues", "new"]), do: show_new_issues()
+  def main(["issues"]), do: show_my_issues()
+
+  def main(["issue", key]), do: show_issue(key)
+
+  def main(["sprint"]), do: show_active_sprint_issues()
+
+  def main(["backlog", "bugs"]), do: show_backlog_bugs()
+
+  def main(["open", key]), do: open_issue(key)
+
+  def main(_), do: show_help_message()
 
   defp show_team do
     case Jirino.Utilities.get_config(:team) do
       empty when empty in [[], nil] ->
-        IO.puts "The team has not been defined yet!"
+        IO.puts("The team has not been defined yet!")
+
       team ->
         team
-        |> Enum.map(fn(teammate) -> "-> #{teammate}" end)
+        |> Enum.map(fn teammate -> "-> #{teammate}" end)
         |> Enum.join("\n")
-        |> IO.puts
+        |> IO.puts()
     end
   end
 
   defp show_team_issues do
-    chunks = Jirino.Utilities.get_config(:team)
-    |> Jirino.RemoteCalls.get_issues_for_users
-    |> Enum.group_by(fn(issue) -> issue.assignee end)
-    |> Enum.map(fn({user, issues}) -> Enum.reduce(
-      issues,
-      "===[#{user}'s issues]===\n",
-      fn(issue, acc) -> acc <> "#{Jirino.Issue.format_short(issue)}\n" end
-    )
-    end)
+    chunks =
+      Jirino.Utilities.get_config(:team)
+      |> Jirino.RemoteCalls.get_issues_for_users()
+      |> Enum.group_by(fn issue -> issue.assignee end)
+      |> Enum.map(fn {user, issues} ->
+        Enum.reduce(issues, "===[#{user}'s issues]===\n", fn issue, acc ->
+          acc <> "#{Jirino.Issue.format_short(issue)}\n"
+        end)
+      end)
 
     chunks
     |> Enum.join("\n")
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp show_my_issues do
     Jirino.Utilities.get_config(:username)
-    |> (fn(user) -> [user] end).()
-    |> Jirino.RemoteCalls.get_issues_for_users
+    |> (fn user -> [user] end).()
+    |> Jirino.RemoteCalls.get_issues_for_users()
     |> Enum.map(&Jirino.Issue.format_short/1)
     |> Enum.join("\n")
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp show_new_issues do
     Jirino.Utilities.get_config(:project)
-    |> Jirino.RemoteCalls.get_latest_issues_for_project
+    |> Jirino.RemoteCalls.get_latest_issues_for_project()
     |> Enum.map(&Jirino.Issue.format_short/1)
     |> Enum.join("\n")
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp show_issue(key) do
     key
-    |> Jirino.RemoteCalls.get_issue_by_key
-    |> List.first
-    |> Jirino.Issue.format
-    |> IO.puts
+    |> Jirino.RemoteCalls.get_issue_by_key()
+    |> List.first()
+    |> Jirino.Issue.format()
+    |> IO.puts()
   end
 
   defp show_active_sprint_issues do
     Jirino.Utilities.get_config(:project)
-    |> Jirino.RemoteCalls.get_active_sprint_issues
-    |> Enum.group_by(fn(issue) -> issue.status end)
-    |> Enum.map(fn({status, issues_group}) ->
+    |> Jirino.RemoteCalls.get_active_sprint_issues()
+    |> Enum.group_by(fn issue -> issue.status end)
+    |> Enum.map(fn {status, issues_group} ->
       status_header = "#{status} issues:\n"
 
-      issues_text = issues_group
-      |> Enum.map(&Jirino.Issue.format_short/1)
-      |> Enum.join("\n")
+      issues_text =
+        issues_group
+        |> Enum.map(&Jirino.Issue.format_short/1)
+        |> Enum.join("\n")
 
       status_header <> issues_text <> "\n\n"
     end)
     |> Enum.join("")
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp show_backlog_bugs do
     Jirino.Utilities.get_config(:project)
-    |> Jirino.RemoteCalls.get_backlog_bugs
+    |> Jirino.RemoteCalls.get_backlog_bugs()
     |> Enum.map(&Jirino.Issue.format_short/1)
     |> Enum.join("\n")
-    |> IO.puts
+    |> IO.puts()
   end
 
   defp open_issue(key) do
     base_url = Jirino.Utilities.get_config(:jiraBaseUrl)
-    { _, os_name } = :os.type()
+    {_, os_name} = :os.type()
 
     case os_name do
       :darwin -> System.cmd("open", ["#{base_url}/browse/#{key}"])
@@ -132,7 +134,6 @@ defmodule Jirino do
   end
 
   defp show_help_message do
-    IO.puts @help_message
+    IO.puts(@help_message)
   end
-
 end
